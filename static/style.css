@@ -1,0 +1,15 @@
+:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+body { max-width: 720px; margin: 40px auto; padding: 0 16px; }
+h1 { margin: 0 0 16px; }
+form { display: flex; gap: 8px; margin-bottom: 16px; }
+input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+button { padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; }
+button.primary { background: #1e88e5; color: white; }
+button.ghost { background: #f2f2f2; }
+ul { list-style: none; padding: 0; margin: 0; }
+li { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 8px; }
+.done { text-decoration: line-through; opacity: 0.7; }
+.meta { font-size: 12px; color: #666; }
+.row { display: flex; align-items: center; gap: 10px; }
+#error { color: #c62828; margin: 8px 0 0; min-height: 1.2em; }
+#empty { color: #777; margin-top: 12px; }

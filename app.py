@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -45,6 +45,10 @@ def delete_task(task_id):
     db.session.delete(task)
     db.session.commit()
     return jsonify({"message": "Task deleted"})
+
+@app.get("/")
+def ui():
+    return render_template("index.html")
 
 if __name__ == "__main__":
     with app.app_context():
