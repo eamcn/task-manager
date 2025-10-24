@@ -3,7 +3,7 @@ const input = document.getElementById("text");
 const list  = document.getElementById("list");
 const empty = document.getElementById("empty");
 
-// Create a task
+// create a task
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -22,10 +22,10 @@ form.addEventListener("submit", async (event) => {
   }
 
   input.value = "";
-  await loadTasks();
+  await loadTasks(); // refresh UI
 });
 
-// Fetch & render tasks
+// fetch & render tasks
 async function loadTasks() {
   const res = await fetch("/tasks");
   if (!res.ok) {
@@ -37,7 +37,7 @@ async function loadTasks() {
 
   list.innerHTML = "";
 
-  if (data.length === 0) {
+  if (!data.length) {
     empty.style.display = "block";
     return;
   }
@@ -46,20 +46,72 @@ async function loadTasks() {
   data.forEach((task) => {
     const li = document.createElement("li");
 
-    // text
+    // label
     const label = document.createElement("span");
-    label.textContent = task.text;         
+    label.textContent = task.text;
+    if (task.done) label.classList.add("done");
     li.appendChild(label);
 
-    // delete button
-    const btn = document.createElement("button");
-    btn.textContent = "Delete";
-    btn.addEventListener("click", async () => {
-      const del = await fetch(`/tasks/${task.id}`, { method: "DELETE" });
-      if (del.ok) loadTasks();
-      else console.error("Failed to delete");
+    // mark done & undo button
+    const doneBtn = document.createElement("button");
+    doneBtn.textContent = task.done ? "Undo" : "Mark done";
+    doneBtn.addEventListener("click", async () => {
+        const res = await fetch(`/tasks/${task.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ done: !task.done })
+        })
+        if(res.ok) {
+            await loadTasks();
+        } else {
+            console.error("Failed to update 'done'");
+        }
     });
-    li.appendChild(btn);
+    li.append(doneBtn);
+
+    // edit button
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", () => {
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.value = task.text;
+
+      li.replaceChild(inp, label);
+      inp.focus();
+
+      inp.addEventListener("keydown", async (e) => {
+        if (e.key !== "Enter") return;
+        const newText = inp.value.trim();
+        if (!newText) return;
+
+        const up = await fetch(`/tasks/${task.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: newText })
+        });
+
+        if (up.ok) {
+          await loadTasks();
+        } else {
+          console.error("Failed to update task");
+        }
+      });
+    });
+    li.appendChild(editBtn);
+
+    // delete button
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    delBtn.addEventListener("click", async () => {
+      const del = await fetch(`/tasks/${task.id}`, { method: "DELETE" });
+      if (del.ok) {
+        await loadTasks();
+      } else {
+        console.error("Failed to delete");
+      }
+    });
+    li.appendChild(delBtn);
 
     list.appendChild(li);
   });

@@ -29,13 +29,23 @@ def add_task():
     return jsonify({"id": new_task.id, "text": new_task.text, "done": new_task.done}), 201
 
 @app.route("/tasks/<int:task_id>", methods=["PATCH"])
-def mark_done(task_id):
+def update_task(task_id):
     task = Task.query.get(task_id)
     if not task:
         return jsonify({"error": "Task not found"}), 404
-    task.done = True
+    
+    data = request.get_json()
+    
+    if "text" in data:
+        new_text = (data["text"].strip())
+
+        task.text = new_text
+
+    if "done" in data:
+        task.done = bool(data["done"])
+        
     db.session.commit()
-    return jsonify({"message": "Task marked as done"})
+    return jsonify({"message": "Task updated"})
 
 @app.route("/tasks/<int:task_id>", methods=["DELETE"])
 def delete_task(task_id):
