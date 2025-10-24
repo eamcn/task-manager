@@ -7,9 +7,17 @@ button { padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; }
 button.primary { background: #1e88e5; color: white; }
 button.ghost { background: #f2f2f2; }
 ul { list-style: none; padding: 0; margin: 0; }
-li { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 8px; }
+li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 8px; }
 .done { text-decoration: line-through; opacity: 0.7; }
 .meta { font-size: 12px; color: #666; }
 .row { display: flex; align-items: center; gap: 10px; }
 #error { color: #c62828; margin: 8px 0 0; min-height: 1.2em; }
 #empty { color: #777; margin-top: 12px; }
+.task-label { flex: 1 1 auto; }
+.task-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.icon-btn { background: none; border: none; padding: 4px; cursor: pointer; color: #444; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s ease; }
+
+.icon-btn:hover { color: #1e88e5; }
+.icon-btn:focus { outline: none; color: #1565c0; }  
+.icon-btn.danger:hover { color: #e53935; }
+.icon-btn svg { width: 22px; height: 22px; stroke-width: 2; }
