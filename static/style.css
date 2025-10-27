@@ -18,11 +18,16 @@ form {
     margin-bottom: 16px; 
 }
 
-input[type="text"] { 
+input[type="text"], 
+input[type="datetime-local"] { 
     flex: 1; 
     padding: 10px; 
     border: 1px solid #ddd; 
     border-radius: 8px; 
+}
+
+input[type="datetime-local"] {
+    flex: 0 0 200px;
 }
 
 button { 
@@ -124,4 +129,19 @@ li {
     width: 22px; 
     height: 22px; 
     stroke-width: 2; 
+}
+
+.due-date {
+    font-size: 0.85em;
+    color: #666;
+    margin-left: 8px;
+}
+
+.due-date.overdue {
+    color: #c62828;
+    font-weight: 500;
+}
+
+.due-date.upcoming {
+    color: #f57c00;
 }

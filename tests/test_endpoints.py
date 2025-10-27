@@ -29,10 +29,20 @@ def test_create_task(client, app):
     data = res.get_json()
     assert data["text"] == "write tests"
     assert data["done"] is False
+    assert data["due_date"] is None
 
-    # verify it’s in the DB
+    # verify it's in the DB
     with app.app_context():
         assert Task.query.count() == 1
+
+def test_create_task_with_due_date(client, app):
+    from datetime import datetime
+    due_date = datetime.now().isoformat()
+    res = client.post("/tasks", json={"text": "write tests", "due_date": due_date})
+    assert res.status_code == 201
+    data = res.get_json()
+    assert data["text"] == "write tests"
+    assert data["due_date"] is not None
 
 def test_update_text(client):
     # create
@@ -77,3 +87,24 @@ def test_validation_rejects_empty_text_on_update(client):
     tid = client.post("/tasks", json={"text": "keep"}).get_json()["id"]
     res = client.patch(f"/tasks/{tid}", json={"text": "   "})
     assert res.status_code == 400
+
+def test_update_due_date(client):
+    tid = client.post("/tasks", json={"text": "task"}).get_json()["id"]
+    from datetime import datetime, timedelta
+    due_date = (datetime.now() + timedelta(days=1)).isoformat()
+    
+    res = client.patch(f"/tasks/{tid}", json={"due_date": due_date})
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["due_date"] is not None
+    assert data["text"] == "task"
+
+def test_remove_due_date(client):
+    from datetime import datetime, timedelta
+    due_date = (datetime.now() + timedelta(days=1)).isoformat()
+    tid = client.post("/tasks", json={"text": "task", "due_date": due_date}).get_json()["id"]
+    
+    res = client.patch(f"/tasks/{tid}", json={"due_date": None})
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["due_date"] is None

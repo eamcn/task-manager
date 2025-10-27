@@ -1,5 +1,6 @@
 const form  = document.getElementById("add-form");
 const input = document.getElementById("text");
+const dueDateInput = document.getElementById("due-date");
 const list  = document.getElementById("list");
 const empty = document.getElementById("empty");
 
@@ -10,10 +11,12 @@ form.addEventListener("submit", async (event) => {
   const text = input.value.trim();
   if (!text) return;
 
+  const dueDate = dueDateInput.value || null;
+
   const res = await fetch("/tasks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text })
+    body: JSON.stringify({ text, due_date: dueDate })
   });
 
   if (!res.ok) {
@@ -22,6 +25,7 @@ form.addEventListener("submit", async (event) => {
   }
 
   input.value = "";
+  dueDateInput.value = "";
   await loadTasks(); // refresh UI
 });
 
@@ -52,6 +56,24 @@ async function loadTasks() {
     label.textContent = task.text;
     if (task.done) label.classList.add("done");
     li.appendChild(label);
+
+    // due date
+    if (task.due_date) {
+      const dueDateSpan = document.createElement("span");
+      dueDateSpan.className = "due-date";
+      const dueDate = new Date(task.due_date);
+      const now = new Date();
+      
+      dueDateSpan.textContent = dueDate.toLocaleDateString();
+      
+      if (dueDate < now) {
+        dueDateSpan.classList.add("overdue");
+      } else if (dueDate - now < 24 * 60 * 60 * 1000) {
+        dueDateSpan.classList.add("upcoming");
+      }
+      
+      label.appendChild(dueDateSpan);
+    }
 
     const actions = document.createElement("div");
     actions.className = "task-actions";
@@ -101,7 +123,7 @@ async function loadTasks() {
         const up = await fetch(`/tasks/${task.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: newText })
+          body: JSON.stringify({ text: newText, due_date: task.due_date })
         });
 
         if (up.ok) {
